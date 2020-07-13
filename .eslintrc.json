@@ -50,6 +50,7 @@
       {
         "newlinesBetween": "ignore",
         "groups": [
+          "/ˆ(styled)/",
           "/ˆ(react)/",
           "module",
           "/@/",

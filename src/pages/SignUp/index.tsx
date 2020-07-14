@@ -19,6 +19,7 @@ import logoImg from '../../assets/logo.png';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 
+import api from '../../services/api';
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import {
@@ -41,41 +42,44 @@ const SignUp: React.FC = () => {
   const navigation = useNavigation();
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  const handleSignUp = useCallback(async (data: SignUpFormData): Promise<
-    void
-  > => {
-    try {
-      formRef.current?.setErrors({});
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData): Promise<void> => {
+      try {
+        formRef.current?.setErrors({});
 
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Obrigatório'),
-        email: Yup.string().required('Obrigatório').email('E-mail inválido'),
-        password: Yup.string().min(6, 'Mínimo 6 caracteres')
-      });
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Obrigatório'),
+          email: Yup.string().required('Obrigatório').email('E-mail inválido'),
+          password: Yup.string().min(6, 'Mínimo 6 caracteres')
+        });
 
-      await schema.validate(data, {
-        abortEarly: false
-      });
+        await schema.validate(data, {
+          abortEarly: false
+        });
 
-      // await api.post('/users', data);
+        await api.post('/users', data);
 
-      Alert.alert(
-        'Cadastro realizado!',
-        'Você já pode fazer seu logon no GoBarber'
-      );
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
-        formRef.current?.setErrors(errors);
-        return;
+        Alert.alert(
+          'Cadastro realizado com sucesso!',
+          'Você já pode fazer seu logon no GoBarber'
+        );
+
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+
+        Alert.alert(
+          'Falha no cadastro',
+          'Ocorreu um erro ao fazer o cadastro, tente novamente.'
+        );
       }
-
-      Alert.alert(
-        'Falha no cadastro',
-        'Ocorreu um erro ao fazer o cadastro, tente novamente.'
-      );
-    }
-  }, []);
+    },
+    [navigation]
+  );
 
   return (
     <>
@@ -138,7 +142,7 @@ const SignUp: React.FC = () => {
                   formRef.current?.submitForm();
                 }}
               >
-                Entrar
+                Cadastrar
               </Button>
             </Form>
           </Container>
